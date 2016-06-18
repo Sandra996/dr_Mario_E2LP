@@ -1,0 +1,3 @@
+PROCESSOR=microblaze_0
+REPOSITORIES=-lp C:/materija/ra198_11/E2LP_Text_Mode_Tetris-master/XPS_system
+HWSPEC=../basic_system_hw_platform/system.xml
