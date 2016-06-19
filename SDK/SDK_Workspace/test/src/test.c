@@ -695,6 +695,8 @@ void newPillF(){
 		stanje = KRAJ;
 }
 
+// ---------------------------------- CLEARING THE GAME TABLE --------------------------------------
+// clearing the game table and preparing the table for game start
 void clearTable(){
 	int i1,i2;
 	for(i1=0;i1<MAX_TABLE_Y;i1++)
