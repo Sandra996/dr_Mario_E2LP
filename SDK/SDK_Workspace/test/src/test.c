@@ -51,7 +51,6 @@ enum Stanja {
 		PADANJE,
 		SREDJIVANJE,
 		SREDJIVANJE_PADANJE,
-		SREDJIVANJE_SREDJIVANJE,
 		KRAJ
 	} stanje;
 
@@ -157,9 +156,7 @@ void clearingPill6();
 void drawGameState();
 void drawStaticGameMessages();
 unsigned char sredjivanje();
-//unsigned char proveraGore(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere);
 unsigned char proveraDole(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere);
-//unsigned char proveraLevo(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere);
 unsigned char proveraDesno(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere);
 void ponistavanje(unsigned char kordYp, unsigned char kordXp, unsigned char kordYk, unsigned char kordXk);
 
@@ -200,8 +197,7 @@ int main()
 
 	//----------------------------Initializing platform-------------------------------------
 	initializingPlatform();
-	//print("asdf");
-	//xil_printf("jkl;");
+
 
 	srand(interruptBrojac);
 	//============================Infinite loop for game==================================
@@ -214,13 +210,11 @@ int main()
 			switch(prekidac){
 					//-------- GORE ----------
 					case 0x0F: if(debouncer == 0){
-									//xil_printf("\n prekidac UP\n\r");
 								}
 								break;
 					//-------- LEVO ----------
 					case 0x1D: if(debouncer == 0){//up
 									debouncer = 1;
-									//xil_printf("\n prekidac LEVO\n\r");
 									if((!table[currentPill[2]][currentPill[3] - 1]) && (currentPill[3]>0)){//prazno levo i provera granice ulevo
 										if(currentPill[4] && !table[currentPill[2] - 1][currentPill[3] - 1]){//pillula je vertikalna i za drugu slobodno levo
 											table[currentPill[2]]	[currentPill[3]] 	 = 0x00;//brisanje pozicije trenutne pilule vertikalno
@@ -240,7 +234,6 @@ int main()
 					//--------- DESNO ----------
 					case 0x17: if(debouncer == 0){
 									debouncer = 1;
-									//xil_printf("\n prekidac DESNO\n\r");
 									//---- HORIZONTALNO ------ prazno desno za 2 i provera granice desno
 									if((!table[currentPill[2]][currentPill[3] + 2]) && (currentPill[3] < MAX_TABLE_X - 2) && !currentPill[4]){
 											table[currentPill[2]][currentPill[3]] = 0x00;//brisanje prethodne pozicije
@@ -259,7 +252,6 @@ int main()
 								break;
 					// --------- ROTIRANJE ----------
 					case 0x1B: if(debouncer == 0){
-									//xil_printf("\n prekidac ROTIRANJE\n\r");
 									debouncer = 1;
 									if(currentPill[4]){//VERTIKALNO
 										if(!table[currentPill[2]][currentPill[3] + 1]){//prazna pozicija za rotiranje
@@ -301,7 +293,6 @@ int main()
 
 			drawBackground();
 			drawStaticGameMessages();
-			//xil_printf("\n stanje OFF\n\r");
 		}
 
 		//==============================================    ON    ==============================================
@@ -312,13 +303,11 @@ int main()
 			fillTableWBugs(table,nBugs);
 			creatingCurrentNextPills();
 			stanje 	= PADANJE;
-			//xil_printf("\n stanje ON\n\r");
 		}
 
 		//==============================================  PADANJE  ==============================================
 		if((stanje == PADANJE) && (speed < interruptBrojac)){
 			if(prekidac == 0x1E){// ubrzano padanje
-				//xil_printf("\n prekidac DOWN\n\r");
 				speed = 8;
 			}else{
 				speed = default_speed;
@@ -342,7 +331,6 @@ int main()
 				}
 			}else stanje = SREDJIVANJE;
 			interruptBrojac 	= 0;
-			//xil_printf("\n stanje PADANJE\n\r");
 		}
 
 		//==============================================  SREDJIVANJE  ==============================================
@@ -353,13 +341,10 @@ int main()
 			if(ponisteno){
 				stanje = SREDJIVANJE_PADANJE;
 				ponisteno = 0;
-				//xil_printf("\n sledece stanje SREDJIVANJE_PADANJE\n\r");
 			}else{
 				newPillF();
 				stanje = PADANJE;
-				//xil_printf("\n sledece stanje PADANJE\n\r");
 			}
-			//xil_printf("\n u stanju SREDJIVANJE\n\r");
 		}
 
 		//==============================================  SREDJIVANJE_PADANJE  ==============================================
@@ -367,7 +352,6 @@ int main()
 			//krece odozdo ka gore
 			//promenjiva koja proverava dali je bilo padanja - paziti na resetovanje iste
 			palo = 0;
-			//xil_printf("\n u stanju SREDJIVANJE_PADANJE\n\r");
 			for(y = MAX_TABLE_Y - 2; y >= 0; y--){
 				for(x = 0; x < MAX_TABLE_X; x++){
 					pillPomoc = table[y][x] & 0x7;
@@ -409,19 +393,6 @@ int main()
 			if(!palo)//ostaje stanje SREDJIVANJE_PADANJE sve dok sve nepadne a onda ide SREDJIVANJE palog
 				stanje = SREDJIVANJE;
 		}
-		/*
-		//==============================================  SREDJIVANJE_SREDJIVANJE  ==============================================
-		if(stanje == SREDJIVANJE_SREDJIVANJE){
-			//xil_printf("\n stanje SREDJIVANJE_SREDJIVANJE\n\r");
-			ponisteno = sredjivanje();
-			if(ponisteno)
-				stanje = SREDJIVANJE_PADANJE;
-			else{
-				newPillF();
-				stanje = PADANJE;
-			}
-		}
-		*/
 
 		//----------- zavrsen lvl --- sledeci lvl ------------------------
 		if(!nBugs && (stanje!=KRAJ)){
@@ -433,7 +404,6 @@ int main()
 		}
 		//==============================================    KRAJ    ==============================================
 		if(stanje == KRAJ){
-			//xil_printf("\n stanje KRAJ\n\r");
 			stanje = OFF;
 		}
 
@@ -448,6 +418,8 @@ int main()
     return 0;
 }
 
+// ----------------------------------- CURRENT GAME STATISTICS -------------------------------
+// it draws game statistic: current level, number of viruses, current game speed and current score
 void drawGameState(){
 	// SCORE
 	set_cursor(9*40 + 4);
@@ -476,6 +448,8 @@ void drawGameState(){
     print_string(XPAR_VGA_PERIPH_MEM_0_S_AXI_MEM0_BASEADDR, 3, s_nBugs, 2);
 }
 
+// ------------------------------- DRAWING THE GAME STATIC MESSAGES --------------------------
+// draws strings on background, its called only on the start of the game
 void drawStaticGameMessages(){
 	//SCORE
 	set_cursor(7*40 + 4);
@@ -499,9 +473,10 @@ void drawStaticGameMessages(){
 
 
 }
-
+// -------------------------- CHECKING THE GAME TABLE FOR MATCHING ELEMENTS ---------------------
+// it checks if there is matching shape and color in the game table and it exist it "destroy" it,
+// it returns number of destroyed shape/color matching elements
 unsigned char sredjivanje(){
-	//xil_printf("\n funk sredjivanje\n\r");
 	unsigned char iX,iY;
 	unsigned char brojIstih;
 	unsigned char bojaPomoc;
@@ -539,14 +514,15 @@ unsigned char sredjivanje(){
 	return ponisteno;
 }
 
+// --------------------------------- CLEARING ELEMENTS VERTICALLY AND HORIZONTALLY ---------------------
+// it replace  ONLY vertically or horizontally all elements from starting position (kordYp,kordXp) to
+// the end position (kordYk, kordXk) with the PILL6 helping element kepping color of that position,
+// all elements connected with destroyed elements are altered
 void ponistavanje(unsigned char kordYp, unsigned char kordXp, unsigned char kordYk, unsigned char kordXk){
 	unsigned char i, pillPomoc, bojaPomoc;
-	//xil_printf("\n ulaz funkcija ponistavanje\n\r %d, %d do %d, %d",kordYp,kordXp, kordYk,kordXk);
 
 	if(kordXp == kordXk){//vertikalno ponistavanje
-		//xil_printf("\n vertikalno\n\r");
 		for(i = kordYp; i <= kordYk; i++){
-			//if(!table[i][kordXp]){// da omoguci drugi prolaz preko centra
 				pillPomoc = table[i][kordXp] & 0x07;
 				bojaPomoc = table[i][kordXp] & 0x18;
 				table[i][kordXp] = bojaPomoc | 6;
@@ -580,13 +556,10 @@ void ponistavanje(unsigned char kordYp, unsigned char kordXp, unsigned char kord
 								table[i-1][kordXp] = bojaPomoc | 5;
 							}
 				}
-			//}
 		}
 	}
 	if(kordYp == kordYk){//horizontalno ponistavanje
-		//xil_printf("\n ulaz funkcija ponistavanje horizontalno\n\r");
 		for(i = kordXp; i <= kordXk; i++){
-			//if(!table[kordYp][i]){//da omoguci drugi prolaz preko centra
 				pillPomoc = table[kordYp][i] & 0x07;
 				bojaPomoc = table[kordYp][i] & 0x18;
 				table[kordYp][i] = bojaPomoc + 6;
@@ -620,14 +593,15 @@ void ponistavanje(unsigned char kordYp, unsigned char kordXp, unsigned char kord
 							table[kordYp-1][i] = bojaPomoc | 5;
 							break;
 					}
-			//}
 		}
 	}
-	//xil_printf("\n ulaz funkcija ponistavanje gotovo\n\r");
 }
+
+// ----------------------------- CLEARING HELPING ELEMENT FROM TABLE ------------------------------
+// clearing "pill6" which is used to help vertical and horizontal checking (double pass over the same element)
+// of matching color element and at the same time to animate destruction of element
 void clearingPill6(){
 	unsigned char iX, iY;
-	//xil_printf("\n clearingPill6\n\r");
 	for(iY = 0; iY < MAX_TABLE_Y; iY++){
 		for(iX = 0; iX < MAX_TABLE_X; iX++){
 			if((table[iY][iX] & 0x07) == 6)
@@ -635,35 +609,10 @@ void clearingPill6(){
 		}
 	}
 }
-/*
-unsigned char proveraGore(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere){
-	//xil_printf("\n ulaz funkcija proveraGore\n\r");
-	unsigned char i;
-	unsigned char br_gore;
-	unsigned char bojaGore;
-	unsigned char bojaPodudara;
 
-	i=0;
-	br_gore = 0;
-	bojaPodudara = 1;
-
-	do{
-		++i;
-		if((kordY-1)>= 0){
-			bojaGore = (table[kordY-i][kordX] & 0x18) >> 3;
-			if(bojaGore == bojaProvere)
-				br_gore++;
-			else
-				bojaPodudara = 0;
-		}else
-			bojaPodudara = 0;
-	}while(bojaPodudara);
-
-	return br_gore;
-}
-*/
+// ---------------------------------- CHECKING NUMBER OF ELEMENTS WITH SAME COLOR VERTICALY -------------------
+// return number of table elements with the same matching color from starting position (kordY, kordX) cordinates
 unsigned char proveraDole(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere){
-	//xil_printf("\n ulaz funkcija proveraDole\n\r");
 	unsigned char i;
 	unsigned char br_dole;
 	unsigned char bojaDole;
@@ -687,34 +636,10 @@ unsigned char proveraDole(unsigned char kordY,unsigned char kordX, unsigned char
 	}while(bojaPodudara);
 	return br_dole;
 }
-/*
-unsigned char proveraLevo(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere){
-	//xil_printf("\n ulaz funkcija proveraLevo\n\r");
-	unsigned char i;
-	unsigned char br_levo;
-	unsigned char bojaLevo;
-	unsigned char bojaPodudara;
 
-	i=0;
-	br_levo = 0;
-	bojaPodudara = 1;
-
-	do{
-		++i;
-		if((kordX-i) >= 0){
-			bojaLevo = (table[kordY][kordX-i] & 0x18) >> 3;
-			if(bojaLevo == bojaProvere)
-				br_levo++;
-			else
-				bojaPodudara = 0;
-		}else
-			bojaPodudara = 0;
-	}while(bojaPodudara);
-	return br_levo;
-}
-*/
+// ---------------------------------- CHECKING NUMBER OF ELEMENTS WITH SAME COLOR HORIZONTALY -------------------
+// return number of table elements with the same matching color from starting position (kordY, kordX) cordinates
 unsigned char proveraDesno(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere){
-	//xil_printf("\n ulaz funkcija proveraDesno\n\r");
 	unsigned char i;
 	unsigned char br_desno;
 	unsigned char bojaDesno;
@@ -738,8 +663,9 @@ unsigned char proveraDesno(unsigned char kordY,unsigned char kordX, unsigned cha
 	return br_desno;
 }
 
+// ------------------------------- CREATING CURRENT AND NEW PILL -------------------------
+// its called only when game starts and there is need to create "current" and next pill at the same time
 void creatingCurrentNextPills(){
-	//xil_printf("\n ulaz funkcija creatingCurrentNextPills\n\r");
 	currentPill[0]	= ((rand()%3 + 1) << 3) + 1;
 	currentPill[1]	= ((rand()%3 + 1) << 3) + 2;
 	currentPill[2] 	= 0;
@@ -751,8 +677,9 @@ void creatingCurrentNextPills(){
 	table[0][4]		= currentPill[1];
 }
 
+// ----------------------------------  CREATING NEW PILL AND UPDATING CURRENT ONE ---------------------
+// called whenever it needs to place pill in the game table and create new pill
 void newPillF(){
-	//xil_printf("\n ulaz funkcija newPillF\n\r");
 	if( (!table[0][3]) || (!table[0][4])){
 		currentPill[0]	= newPill[0];
 		currentPill[1]	= newPill[1];
@@ -769,7 +696,6 @@ void newPillF(){
 }
 
 void clearTable(){
-	//xil_printf("\n ulaz funkcija clearTable\n\r");
 	int i1,i2;
 	for(i1=0;i1<MAX_TABLE_Y;i1++)
 		for(i2=0;i2<MAX_TABLE_X;i2++){
@@ -777,8 +703,9 @@ void clearTable(){
 		}
 }
 
+// ------------------------------- FILLING THE GAME TABLE WITH VIRUSES 	-------------------------
+//called only once on different level start, it create viruses on the game table
 void fillTableWBugs(){
-	//xil_printf("\n ulaz funkcija fillTableWBugs\n\r");
 
 	int i;
 	int iStart;
@@ -807,8 +734,9 @@ void fillTableWBugs(){
 	}
 }
 
+// -------------------------- DRAWING BACKGROUND -----------------------------------------
+// drawing game background, it get called only once in begginning of the game
 void drawBackground(){
-	//xil_printf("\n ulaz funkcija drawBackground\n\r");
 	for(y=0; y<30; y++)
 		for(x=0; x<40; x++){
 			set_cursor(y*40+x);
@@ -827,11 +755,12 @@ void drawBackground(){
 		}
 }
 
+// ---------------------------  DRAWING GAME TABLE ---------------------------------------
+// on every interrupt call entire game table is drawn
 void drawTable(){
 	for(y=POCETAK_TABLE_Y; y<POCETAK_TABLE_Y + MAX_TABLE_Y; y++){
 		for(x=POCETAK_TABLE_X;x<POCETAK_TABLE_X + MAX_TABLE_X; x++){
 					    set_cursor(y*40+x);
-					    //xil_printf("\n DRAWING TABLE\n");
 						boja = table[y - POCETAK_TABLE_Y][x - POCETAK_TABLE_X] & 0x18;
 						pill = table[y - POCETAK_TABLE_Y][x - POCETAK_TABLE_X] & 0x7;
 						boja = boja >> 3;
@@ -845,7 +774,6 @@ void drawTable(){
 									case 5: znak = PILL5; break;
 									case 6: znak = PILL6; break;
 								}
-								//xil_printf("\n CHOOSING PILL\n");
 							}
 							else{
 								if(animatedV){
@@ -854,7 +782,6 @@ void drawTable(){
 										case 2: znak = ANIM_VIRUS2; break;
 										case 3: znak = ANIM_VIRUS3; break;
 									}
-									//xil_printf("\n CHOOSING VIRUS ANIM\n");
 								}
 								else{
 									switch (boja){
@@ -862,7 +789,6 @@ void drawTable(){
 										case 2: znak = VIRUS2; break;
 										case 3: znak = VIRUS3; break;
 									}
-								//xil_printf("\n CHOOSING VIRUS\n");
 								}
 							}
 						}
@@ -874,8 +800,8 @@ void drawTable(){
 
 }
 
+// ------------------------- INITIALIZING PLATFORM  -------------------------------------------------
 void initializingPlatform(){
-	//xil_printf("\n ulaz funkcija initializingPlatform\n \r");
     init_platform();
 
 	Status = XIntc_Initialize (&Intc, XPAR_INTC_0_DEVICE_ID);
