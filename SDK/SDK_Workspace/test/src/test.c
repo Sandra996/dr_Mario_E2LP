@@ -610,7 +610,7 @@ void clearingPill6(){
 	}
 }
 
-// ---------------------------------- CHECKING NUMBER OF ELEMENTS WITH SAME COLOR VERTICALY -------------------
+// ---------------------------------- CHECKING NUMBER OF ELEMENTS WITH SAME COLOR VERTICALLY -------------------
 // return number of table elements with the same matching color from starting position (kordY, kordX) cordinates
 unsigned char proveraDole(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere){
 	unsigned char i;
@@ -637,7 +637,7 @@ unsigned char proveraDole(unsigned char kordY,unsigned char kordX, unsigned char
 	return br_dole;
 }
 
-// ---------------------------------- CHECKING NUMBER OF ELEMENTS WITH SAME COLOR HORIZONTALY -------------------
+// ---------------------------------- CHECKING NUMBER OF ELEMENTS WITH SAME COLOR HORIZONTALLY -------------------
 // return number of table elements with the same matching color from starting position (kordY, kordX) cordinates
 unsigned char proveraDesno(unsigned char kordY,unsigned char kordX, unsigned char bojaProvere){
 	unsigned char i;
@@ -704,7 +704,7 @@ void clearTable(){
 }
 
 // ------------------------------- FILLING THE GAME TABLE WITH VIRUSES 	-------------------------
-//called only once on different level start, it create viruses on the game table
+//called only on different level start, it create viruses on the game table
 void fillTableWBugs(){
 
 	int i;
